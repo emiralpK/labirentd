@@ -143,8 +143,8 @@ class Cell {
 const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
 const cellSize = 25;  // Size of each cell in the maze
-const rows = 20;
-const cols = 20;
+const rows = 100;
+const cols = 100;
 canvas.width = cellSize * cols;
 canvas.height = cellSize * rows;
 
