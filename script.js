@@ -1,32 +1,34 @@
 const canvas = document.getElementById('mazeCanvas');
 const ctx = canvas.getContext('2d');
-const size = 20;  // Size of each cell in the maze
-const rows = 25;
-const cols = 25;
-canvas.width = size * cols;
-canvas.height = size * rows;
+const cellSize = 25;  // Size of each cell in the maze
+const rows = 20;
+const cols = 20;
+canvas.width = cellSize * cols;
+canvas.height = cellSize * rows;
 
 class Cell {
   constructor(row, col) {
     this.row = row;
     this.col = col;
-    this.visited = false;
     this.walls = [true, true, true, true]; // top, right, bottom, left
+    this.visited = false;
   }
 
   draw() {
-    const x = this.col * size;
-    const y = this.row * size;
+    const x = this.col * cellSize;
+    const y = this.row * cellSize;
 
     ctx.strokeStyle = 'black';
-    if (this.walls[0]) ctx.strokeRect(x, y, size, 0); // Top
-    if (this.walls[1]) ctx.strokeRect(x + size, y, 0, size); // Right
-    if (this.walls[2]) ctx.strokeRect(x, y + size, size, 0); // Bottom
-    if (this.walls[3]) ctx.strokeRect(x, y, 0, size); // Left
+    ctx.lineWidth = 2;
+
+    if (this.walls[0]) ctx.beginPath(), ctx.moveTo(x, y), ctx.lineTo(x + cellSize, y), ctx.stroke(); // Top
+    if (this.walls[1]) ctx.beginPath(), ctx.moveTo(x + cellSize, y), ctx.lineTo(x + cellSize, y + cellSize), ctx.stroke(); // Right
+    if (this.walls[2]) ctx.beginPath(), ctx.moveTo(x + cellSize, y + cellSize), ctx.lineTo(x, y + cellSize), ctx.stroke(); // Bottom
+    if (this.walls[3]) ctx.beginPath(), ctx.moveTo(x, y + cellSize), ctx.lineTo(x, y), ctx.stroke(); // Left
 
     if (this.visited) {
       ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
-      ctx.fillRect(x, y, size, size);
+      ctx.fillRect(x, y, cellSize, cellSize);
     }
   }
 }
@@ -36,6 +38,7 @@ let current;
 const stack = [];
 
 function setup() {
+  grid.length = 0;
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       const cell = new Cell(row, col);
@@ -46,6 +49,7 @@ function setup() {
 }
 
 function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   grid.forEach(cell => cell.draw());
 }
 
@@ -119,12 +123,10 @@ function solveMaze() {
 }
 
 document.getElementById('generateMazeBtn').addEventListener('click', () => {
-  grid.forEach(cell => cell.visited = false);
-  stack.length = 0;
   setup();
   const interval = setInterval(() => {
     generateMaze();
-    if (stack.length === 0) clearInterval(interval);
+    if (stack.length === 0 && !current) clearInterval(interval);
   }, 50);
 });
 
